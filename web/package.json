@@ -11,6 +11,7 @@
   "dependencies": {
     "@clerk/nextjs": "^4.18.2",
     "@maple/db": "file:../packages/db",
+    "@maple/logger": "file:../packages/logger",
     "@t3-oss/env-nextjs": "^0.3.1",
     "@types/node": "20.2.1",
     "@types/react": "18.2.6",

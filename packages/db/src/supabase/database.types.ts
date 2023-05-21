@@ -36,19 +36,19 @@ export interface Database {
     Tables: {
       users: {
         Row: {
-          created_at: string
-          id: number
-          updated_at: string
+          created_at: string | null
+          id: string
+          updated_at: string | null
         }
         Insert: {
-          created_at?: string
-          id?: number
-          updated_at?: string
+          created_at?: string | null
+          id?: string
+          updated_at?: string | null
         }
         Update: {
-          created_at?: string
-          id?: number
-          updated_at?: string
+          created_at?: string | null
+          id?: string
+          updated_at?: string | null
         }
       }
     }
