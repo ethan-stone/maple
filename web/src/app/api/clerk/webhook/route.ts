@@ -59,7 +59,7 @@ export async function POST(req: Request) {
       }
 
       logger.info("user created", {
-        userId: event.data,
+        userId: event.data.id,
       });
 
       break;
