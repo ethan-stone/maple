@@ -2,8 +2,7 @@
 
 ## Technology Choices
 
-- Supabase as primary DB
+- Supabase as primary DB and embeddings
 - Clerk for authentication
 - NextJS for application
-- TailwindCSS for styling
 - SST for non-thirdparty infra
