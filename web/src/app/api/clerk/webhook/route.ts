@@ -25,7 +25,6 @@ export async function POST(req: Request) {
   });
 
   if (!parseHeadersrResult.success) {
-    console.log(parseHeadersrResult.error);
     return new Response("Invalid headers", { status: 400 });
   }
 
@@ -35,9 +34,6 @@ export async function POST(req: Request) {
     JSON.stringify(body),
     parseHeadersrResult.data
   ) as WebhookEvent;
-
-  console.log("signature verified");
-  console.log(event);
 
   switch (event.type) {
     case "user.created": {
