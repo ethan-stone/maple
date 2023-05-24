@@ -34,6 +34,35 @@ export interface Database {
   }
   public: {
     Tables: {
+      documents: {
+        Row: {
+          content: string | null
+          created_at: string
+          dataset_id: string | null
+          embedding: unknown | null
+          id: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          content?: string | null
+          created_at?: string
+          dataset_id?: string | null
+          embedding?: unknown | null
+          id: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          content?: string | null
+          created_at?: string
+          dataset_id?: string | null
+          embedding?: unknown | null
+          id?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+      }
       users: {
         Row: {
           created_at: string | null
@@ -56,7 +85,48 @@ export interface Database {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      ivfflathandler: {
+        Args: {
+          "": unknown
+        }
+        Returns: unknown
+      }
+      vector_avg: {
+        Args: {
+          "": number[]
+        }
+        Returns: unknown
+      }
+      vector_dims: {
+        Args: {
+          "": unknown
+        }
+        Returns: number
+      }
+      vector_norm: {
+        Args: {
+          "": unknown
+        }
+        Returns: number
+      }
+      vector_out: {
+        Args: {
+          "": unknown
+        }
+        Returns: unknown
+      }
+      vector_send: {
+        Args: {
+          "": unknown
+        }
+        Returns: string
+      }
+      vector_typmod_in: {
+        Args: {
+          "": unknown[]
+        }
+        Returns: number
+      }
     }
     Enums: {
       [_ in never]: never
