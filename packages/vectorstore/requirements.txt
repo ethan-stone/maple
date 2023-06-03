@@ -1,0 +1,7 @@
+flupy==1.2.0
+numpy==1.24.3
+pgvector==0.1.8
+psycopg2-binary==2.9.6
+SQLAlchemy==2.0.15
+typing_extensions==4.6.3
+vecs==0.2.6
