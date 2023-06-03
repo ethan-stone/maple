@@ -7,5 +7,6 @@ export function VectorStore({ stack }: StackContext) {
     code: lambda.DockerImageCode.fromImageAsset("./packages/vectorstore"),
     memorySize: 1024,
     timeout: Duration.seconds(10),
+    architecture: lambda.Architecture.ARM_64,
   });
 }
