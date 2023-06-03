@@ -1,4 +1,4 @@
-import { StackContext, Api } from "sst/constructs";
+import { StackContext } from "sst/constructs";
 import * as lambda from "aws-cdk-lib/aws-lambda";
 import { Duration } from "aws-cdk-lib";
 
