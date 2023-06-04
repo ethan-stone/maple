@@ -1,5 +1,22 @@
 from typing import Literal
 from pydantic import BaseModel, conlist, Field
+import vecs
+import os
+from dataclasses import dataclass, field
+
+vx = vecs.create_client(os.environ["DB_URL"])
+
+
+@dataclass
+class VectorStore:
+    vx: vecs.Client
+    collection_name: str = field(init=False, default="vectorstore")
+
+    def __get_collection(self):
+        try:
+            return self.vx.get_collection(self.collection_name)
+        except vecs.exc.CollectionNotFound:
+            return self.vx.create_collection(self.collection_name)
 
 
 class Vector(BaseModel):
@@ -24,5 +41,7 @@ class Event(BaseModel):
 
 def handler(event, context):
     evt = Event(evt=event)
+
+    client = VectorStore(vx)
 
     print("Hello from vectorstore!")
