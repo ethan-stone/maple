@@ -1,47 +1,93 @@
-from typing import Literal
+from ast import List, Tuple
+from typing import Iterable, Literal, Optional, Dict, Union
 from pydantic import BaseModel, conlist, Field
 import vecs
+from vecs.collection import Numeric, Metadata, MetadataValues, Record, IndexMeasure
 import os
-from dataclasses import dataclass, field
-
-vx = vecs.create_client(os.environ["DB_URL"])
-
-
-@dataclass
-class VectorStore:
-    vx: vecs.Client
-    collection_name: str = field(init=False, default="vectorstore")
-
-    def __get_collection(self):
-        try:
-            return self.vx.get_collection(self.collection_name)
-        except vecs.exc.CollectionNotFound:
-            return self.vx.create_collection(self.collection_name)
+from aws_lambda_powertools.utilities import parameters
+import openai
 
 
-class Vector(BaseModel):
+COLLECTION_NAME = 'vectorstore'
+
+openai_api_key = None
+
+
+def get_openai_api_key():
+    if openai_api_key is None:
+        openai_api_key = parameters.get_parameter(
+            os.environ['OPENAI_API_KEY_PARAMETER_NAME']
+        )
+    return openai_api_key
+
+
+vx = None
+
+
+def get_client(db_url: str):
+    if vx is None:
+        vx = vecs.create_client(db_url)
+    return vx
+
+
+def get_collection(vx: vecs.Client, collection_name: str):
+    try:
+        return vx.get_collection(collection_name)
+    except vecs.exc.CollectionNotFound:
+        return vx.create_collection(collection_name, dimension=1536)
+
+
+class Entry(BaseModel):
     id: str
-    vector: conlist(float, min_items=1536, max_items=1536)
+    content: str
     metadata: dict
 
 
 class Query(BaseModel):
     command: Literal["query"]
-    vector: conlist(float, min_items=1536, max_items=1536)
+    query_string: str
+    limit: int = 10
+    filters: Optional[Dict] = None
 
 
 class Upsert(BaseModel):
     command: Literal["upsert"]
-    vectors: list[Vector]
+    entries: list[Entry]
 
 
 class Event(BaseModel):
     evt: Upsert | Query = Field(..., discriminator="command")
 
 
-def handler(event, context):
-    evt = Event(evt=event)
+def handler(event, _):
+    evt = Event(evt=event).evt
 
-    client = VectorStore(vx)
+    db_url: str = parameters.get_parameter(
+        os.environ['VECTOR_STORE_URL_PARAMETER_NAME'])
+    client = get_client(db_url)
+    coll = get_collection(client, COLLECTION_NAME)
 
-    print("Hello from vectorstore!")
+    if evt.command == "upsert":
+        vectors: Iterable[Tuple[str, Iterable[Numeric], Metadata]] = []
+
+        for entry in evt.entries:
+            entry_vector = openai.Embedding.create(
+                model="text-embedding-ada-002",
+                input=[entry.content]
+            )
+
+            vectors.append(
+                (entry.id, entry_vector["data"][0]["embedding"], entry.metadata))
+
+        coll.upsert(vectors)
+
+        return None
+    elif evt.command == "query":
+        query_vector = openai.Embedding.create(
+            model="text-embedding-ada-002",
+            input=[evt.query_string]
+        )
+
+        res: List[str] = coll.query(query_vector["data"][0]["embedding"], limit=evt.limit,
+                                    filters=evt.filters, include_value=False, include_metadata=False)
+        return res
