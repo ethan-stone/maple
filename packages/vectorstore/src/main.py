@@ -13,19 +13,21 @@ COLLECTION_NAME = 'vectorstore'
 openai_api_key = None
 
 
-def get_openai_api_key():
+def set_openai_api_key():
     if openai_api_key is None:
         openai_api_key = parameters.get_parameter(
             os.environ['OPENAI_API_KEY_PARAMETER_NAME']
         )
-    return openai_api_key
+        openai.api_key = openai_api_key
 
 
 vx = None
 
 
-def get_client(db_url: str):
+def get_client():
     if vx is None:
+        db_url: str = parameters.get_parameter(
+            os.environ['VECTOR_STORE_URL_PARAMETER_NAME'])
         vx = vecs.create_client(db_url)
     return vx
 
@@ -62,9 +64,10 @@ class Event(BaseModel):
 def handler(event, _):
     evt = Event(evt=event).evt
 
-    db_url: str = parameters.get_parameter(
-        os.environ['VECTOR_STORE_URL_PARAMETER_NAME'])
-    client = get_client(db_url)
+    set_openai_api_key()
+
+    client = get_client()
+
     coll = get_collection(client, COLLECTION_NAME)
 
     if evt.command == "upsert":
