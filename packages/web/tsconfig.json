@@ -20,7 +20,8 @@
       }
     ],
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@maple/db": ["../db/src/index.ts"]
     }
   },
   "include": [

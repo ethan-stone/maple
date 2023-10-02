@@ -2,9 +2,10 @@ import { env } from "@/env.mjs";
 import { Webhook } from "svix";
 import { z } from "zod";
 import { headers } from "next/headers";
-import { WebhookEvent } from "@clerk/nextjs/dist/server";
-import { supabase } from "@/server/db/client";
+import { WebhookEvent } from "@clerk/nextjs/server";
+import { db, users, eq } from "@/server/db/client";
 import { logger } from "@/server/logger";
+import { uid } from "@/utils/uid";
 
 const secret = env.CLERK_WH_SECRET;
 
@@ -37,22 +38,14 @@ export async function POST(req: Request) {
 
   switch (event.type) {
     case "user.created": {
-      const res = await supabase
-        .from("users")
-        .insert({
-          id: event.data.id,
-          created_at: new Date(event.data.created_at).toISOString(),
-          updated_at: new Date(event.data.updated_at).toISOString(),
-        })
-        .select();
+      const id = uid({ prefix: "user" });
 
-      if (res.error) {
-        logger.error("user creation failed", {
-          userId: event.data.id,
-          error: res.error,
-        });
-        break;
-      }
+      await db.insert(users).values({
+        id,
+        clerkId: event.data.id,
+        createdAt: new Date(event.data.created_at),
+        updatedAt: new Date(event.data.updated_at),
+      });
 
       logger.info("user created", {
         userId: event.data.id,
@@ -62,16 +55,17 @@ export async function POST(req: Request) {
     }
 
     case "user.deleted": {
-      const res = await supabase.from("users").delete().match({
-        id: event.data.id,
-      });
+      const clerkId = event.data.id;
 
-      if (res.error) {
-        logger.error("user deletion failed", {
-          userId: event.data.id,
-          error: res.error,
+      if (!clerkId) {
+        logger.info("can not delete user because clerkId is null", {
+          clerkEvent: event,
         });
+
+        throw new Error("can not delete user because clerkId is null");
       }
+
+      await db.delete(users).where(eq(users.clerkId, clerkId));
 
       logger.info("user deleted", {
         userId: event.data.id,

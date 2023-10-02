@@ -9,8 +9,8 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@clerk/nextjs": "^4.18.2",
-    "@t3-oss/env-nextjs": "^0.3.1",
+    "@clerk/nextjs": "^4.25.1",
+    "@t3-oss/env-nextjs": "^0.6.1",
     "@types/node": "20.2.1",
     "@types/react": "18.2.6",
     "@types/react-dom": "18.2.4",
@@ -18,14 +18,16 @@
     "eslint": "8.41.0",
     "eslint-config-next": "13.4.3",
     "next": "13.4.3",
-    "openai": "^3.2.1",
+    "openai": "^3.3.0",
     "postcss": "8.4.23",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "svix": "^0.85.1",
     "tailwindcss": "3.3.2",
     "typescript": "5.0.4",
-    "zod": "^3.21.4"
+    "ulid": "^2.3.0",
+    "winston": "^3.10.0",
+    "zod": "^3.22.2"
   },
   "devDependencies": {
     "encoding": "^0.1.13"

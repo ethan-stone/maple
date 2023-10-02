@@ -1,25 +1,11 @@
-import { env } from "@/env.mjs";
-import { createPinoLogger, PinoLogger } from "@maple/logger";
+import { createLogger, format, transports } from "winston";
 
-const pino = createPinoLogger({
-  level:
-    env.NODE_ENV === "development"
-      ? "debug"
-      : env.NODE_ENV === "test"
-      ? "silent"
-      : "info",
-  formatters: {
-    level: (label) => {
-      return {
-        level: label.toUpperCase(),
-      };
-    },
-  },
-  mixin() {
-    return {
-      app: "web",
-    };
-  },
+export const logger = createLogger({
+  format: format.json(),
+  defaultMeta: { service: "web" },
+  transports: [
+    new transports.Console({
+      format: format.json(),
+    }),
+  ],
 });
-
-export const logger = new PinoLogger(pino);

@@ -2,6 +2,7 @@ import { mysqlTable, varchar, timestamp, text } from "drizzle-orm/mysql-core";
 
 export const users = mysqlTable("users", {
   id: varchar("id", { length: 36 }).primaryKey(),
+  clerkId: varchar("clerk_id", { length: 36 }).notNull(),
   createdAt: timestamp("created_at").notNull(),
   updatedAt: timestamp("updated_at").notNull(),
 });

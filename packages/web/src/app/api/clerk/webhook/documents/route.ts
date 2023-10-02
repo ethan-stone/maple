@@ -1,5 +1,5 @@
-import { supabase } from "@/server/db/client";
-import { randomUUID } from "crypto";
+import { db, notes, eq } from "@/server/db/client";
+import { uid } from "@/utils/uid";
 import { Configuration, OpenAIApi } from "openai";
 import { z } from "zod";
 
@@ -23,14 +23,17 @@ export async function POST(req: Request) {
     model: "text-embedding-ada-002",
   });
 
-  const res = await supabase
-    .from("documents")
-    .insert({
-      id: randomUUID(),
-      embedding: embedding.data.data[0].embedding,
-      content: body.content,
-    })
-    .select();
+  const id = uid({ prefix: "note" });
+  const now = new Date();
 
-  return res.data;
+  await db.insert(notes).values({
+    id,
+    content: body.content,
+    createdAt: now,
+    updatedAt: now,
+  });
+
+  const note = await db.select().from(notes).where(eq(notes.id, id));
+
+  return note[0];
 }
