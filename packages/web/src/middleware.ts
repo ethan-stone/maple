@@ -2,8 +2,8 @@ import { authMiddleware } from "@clerk/nextjs";
 
 const publicPaths = [
   "/",
-  "/sign-in",
-  "/sign-up",
+  "/sign-in*",
+  "/sign-up*",
   "/api/trpc*",
   "/api/clerk/webhook",
 ];
