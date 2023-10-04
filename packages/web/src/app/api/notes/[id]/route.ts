@@ -4,7 +4,7 @@ import { auth } from "@clerk/nextjs";
 import { z } from "zod";
 
 const ReqBody = z.object({
-  name: z.string(),
+  content: z.string(),
 });
 
 export type ReqBody = z.infer<typeof ReqBody>;
@@ -20,7 +20,10 @@ const ResBody = z.object({
 
 export type ResBody = z.infer<typeof ResBody>;
 
-export async function POST(req: Request) {
+export async function POST(
+  req: Request,
+  { params }: { params: { id: string } }
+) {
   const { userId: clerkId } = auth();
 
   if (!clerkId) return new Response("Unauthorized", { status: 401 });
@@ -39,18 +42,21 @@ export async function POST(req: Request) {
     return new Response(JSON.stringify(validatedBody.error), { status: 400 });
   }
 
-  const id = uid({ prefix: "note" });
+  let note = (await db.select().from(notes).where(eq(notes.id, params.id)))[0];
 
-  await db.insert(notes).values({
-    id,
-    name: validatedBody.data.name,
-    ownerId: user.id,
-    content: "",
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  });
+  if (note === undefined) {
+    return new Response("Not found", { status: 404 });
+  }
 
-  const note = (await db.select().from(notes).where(eq(notes.id, id)))[0];
+  await db
+    .update(notes)
+    .set({
+      content: validatedBody.data.content,
+      updatedAt: new Date(),
+    })
+    .where(eq(notes.id, params.id));
+
+  note = (await db.select().from(notes).where(eq(notes.id, params.id)))[0];
 
   const resBody = ResBody.safeParse({
     id: note.id,
