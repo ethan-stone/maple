@@ -56,6 +56,12 @@ importers:
       '@t3-oss/env-nextjs':
         specifier: ^0.6.1
         version: 0.6.1(typescript@5.0.4)(zod@3.22.2)
+      '@tanstack/react-query':
+        specifier: 5.0.0-rc.1
+        version: 5.0.0-rc.1(react-dom@18.2.0)(react@18.2.0)
+      '@tanstack/react-query-next-experimental':
+        specifier: 5.0.0-rc.1
+        version: 5.0.0-rc.1(@tanstack/react-query@5.0.0-rc.1)(next@13.4.3)(react-dom@18.2.0)(react@18.2.0)
       '@types/node':
         specifier: 20.2.1
         version: 20.2.1
@@ -3067,6 +3073,42 @@ packages:
       '@t3-oss/env-core': 0.6.1(typescript@5.0.4)(zod@3.22.2)
       typescript: 5.0.4
       zod: 3.22.2
+    dev: false
+
+  /@tanstack/query-core@5.0.0-rc.1:
+    resolution: {integrity: sha512-6jzPCwvEHS+Y3QCildpOlIrqJXXJ+v2EvbtCnbKUi6FpOrrfoSPacVB3nr0cjSBG/rCXnTB0aaevx9T8iT9CrQ==}
+    dev: false
+
+  /@tanstack/react-query-next-experimental@5.0.0-rc.1(@tanstack/react-query@5.0.0-rc.1)(next@13.4.3)(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-73kKeplUeIB1WL1y9O7hlOKCk5vEoCRuAbNJcyX+q918I6thL4JY9YDKp4yJuiaUChuKJuJEzE2fXYplGO2dzg==}
+    peerDependencies:
+      '@tanstack/react-query': ^5.0.0-rc.1
+      next: ^13.0.0
+      react: ^18.0.0
+      react-dom: ^18.0.0
+    dependencies:
+      '@tanstack/react-query': 5.0.0-rc.1(react-dom@18.2.0)(react@18.2.0)
+      next: 13.4.3(react-dom@18.2.0)(react@18.2.0)
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
+    dev: false
+
+  /@tanstack/react-query@5.0.0-rc.1(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-hFz2j/pp+faqwaBbp0KV8kgn01GfErfA1BtcwHVE/E+GJINU2ZOAiVJ43LR05JCWnIu4b9pAnOBMHv55GshMZQ==}
+    peerDependencies:
+      react: ^18.0.0
+      react-dom: ^18.0.0
+      react-native: '*'
+    peerDependenciesMeta:
+      react-dom:
+        optional: true
+      react-native:
+        optional: true
+    dependencies:
+      '@tanstack/query-core': 5.0.0-rc.1
+      client-only: 0.0.1
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
     dev: false
 
   /@trpc/server@9.16.0:

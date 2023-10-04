@@ -1,4 +1,5 @@
 import { db, eq, notes, users } from "@/server/db/client";
+import { logger } from "@/server/logger";
 import { uid } from "@/utils/uid";
 import { auth } from "@clerk/nextjs";
 import { z } from "zod";
@@ -6,6 +7,19 @@ import { z } from "zod";
 const ReqBody = z.object({
   name: z.string(),
 });
+
+export type ReqBody = z.infer<typeof ReqBody>;
+
+const ResBody = z.object({
+  id: z.string(),
+  name: z.string(),
+  ownerId: z.string(),
+  content: z.string(),
+  createdAt: z.string().datetime(),
+  updatedAt: z.string().datetime(),
+});
+
+export type ResBody = z.infer<typeof ResBody>;
 
 export async function POST(req: Request) {
   const { userId: clerkId } = auth();
@@ -37,5 +51,20 @@ export async function POST(req: Request) {
     updatedAt: new Date(),
   });
 
-  await db.select().from(notes).where(eq(notes.id, id));
+  const note = (await db.select().from(notes).where(eq(notes.id, id)))[0];
+
+  const resBody = ResBody.safeParse({
+    id: note.id,
+    name: note.name,
+    ownerId: note.ownerId,
+    content: note.content,
+    createdAt: note.createdAt.toISOString(),
+    updatedAt: note.updatedAt.toISOString(),
+  } satisfies ResBody);
+
+  if (!resBody.success) {
+    return new Response(JSON.stringify(resBody.error), { status: 500 });
+  }
+
+  return Response.json(resBody.data, { status: 201 });
 }
