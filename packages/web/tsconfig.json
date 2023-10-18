@@ -18,7 +18,8 @@
     "noUncheckedIndexedAccess": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@maple/db": ["../db/src/index.ts"]
     },
     "plugins": [{ "name": "next" }]
   },
